@@ -1,4 +1,4 @@
-from telegram.ext import Application, CommandHandler, ConversationHandler
+from telegram.ext import Application, CommandHandler, ConversationHandler, CallbackQueryHandler
 from handlers.start_handler import start
 from handlers.csv_handler import upload_csv_command, handle_csv_file
 from handlers.poll_handler import choose_destination, channel_callback, send_all_polls
