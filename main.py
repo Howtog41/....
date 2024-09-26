@@ -28,6 +28,7 @@ def main():
     application.add_handler(CommandHandler("setchannel", set_channel))
     application.add_handler(CommandHandler("channels", channels))
     application.add_handler(CommandHandler("authorize", authorize))
+    application.add_handler(CallbackQueryHandler(channel_management_callback))
 
     application.run_polling()
 
