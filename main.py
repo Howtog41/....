@@ -18,6 +18,7 @@ def main():
     )
 
     application.add_handler(conversation_handler)
+    application.add_handler(CommandHandler("start", start))  # /start command
     application.add_handler(CommandHandler("setchannel", set_channel))
     application.add_handler(CommandHandler("channels", channels))
     application.add_handler(CommandHandler("authorize", authorize))
