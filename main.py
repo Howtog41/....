@@ -5,7 +5,13 @@ from handlers.poll_handler import choose_destination, channel_callback, send_all
 from handlers.channel_handler import set_channel, channels, channel_management_callback
 from handlers.authorization_handler import authorize
 from config import TOKEN
+import logging
 
+# Set up logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG  # Set to DEBUG to see more detailed logs
+)
 def main():
     application = Application.builder().token(TOKEN).build()
 
