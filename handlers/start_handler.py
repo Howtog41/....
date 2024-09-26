@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from helpers.db import users_collection
-
+import logging
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.debug("Received /start command")
     user_id = update.effective_user.id
