@@ -6,6 +6,9 @@ from handlers.channel_handler import set_channel, channels, channel_management_c
 from handlers.authorization_handler import authorize
 from config import TOKEN
 import logging
+# Define states
+CHOOSE_DESTINATION = 1
+CHOOSE_CHANNEL = 2
 
 # Set up logging
 logging.basicConfig(
@@ -19,6 +22,12 @@ def main():
         entry_points=[CommandHandler("uploadcsv", upload_csv_command)],
         states={
             # Define stages for CSV upload and poll sending
+            CHOOSE_DESTINATION: [
+                CallbackQueryHandler(choose_destination, pattern="bot|channel")
+            ],
+            CHOOSE_CHANNEL: [
+                CallbackQueryHandler(channel_callback)
+            ]
         },
         fallbacks=[CommandHandler("start", start)]
     )
