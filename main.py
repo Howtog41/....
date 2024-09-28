@@ -27,7 +27,8 @@ def main():
             CHOOSE_DESTINATION: [CallbackQueryHandler(choose_destination, pattern="bot|channel")],  # Choose bot or channel
             CHOOSE_CHANNEL: [CallbackQueryHandler(channel_callback)]  # Channel selection callback
         },
-        fallbacks=[CommandHandler("start", start)]  # Fallback to start command
+        fallbacks=[CommandHandler("start", start)], # Fallback to start command
+        allow_reentry=True
     )
 
     # Add handlers to the application
