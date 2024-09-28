@@ -1,4 +1,5 @@
 import csv
+import logging
 from telegram import Update
 from telegram.ext import ContextTypes
 from helpers.db import users_collection
@@ -36,36 +37,50 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 # Handle CSV file upload
 
+
+
 async def handle_csv_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
+    logging.info(f"Handling CSV upload for user: {user_id}")
+
     if user_id == ADMIN_ID or users_collection.find_one({'user_id': user_id}):
-        file = await update.message.document.get_file()
-        file_path = f"{file.file_id}.csv"
-        await file.download_to_drive(file_path)
+        try:
+            file = await update.message.document.get_file()
+            file_path = f"{file.file_id}.csv"
+            logging.info(f"Downloading CSV file to: {file_path}")
+            await file.download_to_drive(file_path)
+            
+            with open(file_path, 'r') as f:
+                reader = csv.DictReader(f)
+                questions = list(reader)
 
-        with open(file_path, 'r') as f:
-            reader = csv.DictReader(f)
-            questions = list(reader)
+            logging.info(f"CSV file processed with {len(questions)} questions.")
+            
+            context.user_data['questions'] = questions
 
-        context.user_data['questions'] = questions
+            keyboard = [
+                [InlineKeyboardButton("Bot", callback_data='bot')],
+                [InlineKeyboardButton("Channel", callback_data='channel')]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
 
-        keyboard = [
-            [InlineKeyboardButton("Bot", callback_data='bot')],
-            [InlineKeyboardButton("Channel", callback_data='channel')]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
+            await update.message.reply_text(
+                "Do you want to upload these quizzes to the bot or forward them to a channel?",
+                reply_markup=reply_markup
+            )
 
-        await update.message.reply_text(
-            "Do you want to upload these quizzes to the bot or forward them to a channel?",
-            reply_markup=reply_markup
-        )
+            return CHOOSE_DESTINATION
 
-        return CHOOSE_DESTINATION
+        except Exception as e:
+            logging.error(f"Error processing CSV file: {e}")
+            await update.message.reply_text("There was an error processing the file. Please try again.")
+            return ConversationHandler.END
 
     else:
         await update.message.reply_text("You are not authorized to use this bot. Please contact the admin.")
         return ConversationHandler.END
+
 
 #yha se hendler add krna hai 
 
