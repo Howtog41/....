@@ -7,6 +7,8 @@ from handlers.authorization_handler import authorize
 from config import TOKEN
 import logging
 # Define states
+# Define states
+UPLOAD_CSV = 0  # Add this state for CSV upload handling
 CHOOSE_DESTINATION = 1
 CHOOSE_CHANNEL = 2
 
