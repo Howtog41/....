@@ -24,7 +24,7 @@ def main():
         entry_points=[CommandHandler("uploadcsv", upload_csv_command)],
         states={
             # Define stages for CSV upload and poll sending
-            CHOOSE_DESTINATION: [
+            handle_csv_file: [
                 CallbackQueryHandler(choose_destination, pattern="bot|channel")
             ],
             CHOOSE_CHANNEL: [
