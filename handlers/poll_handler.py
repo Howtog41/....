@@ -49,7 +49,7 @@ async def channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions):
-    answer_mapping = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+    answer_mapping = {'1': 0, '2': 1, '3': 2, '4': 3}
     max_question_length = 255
     max_option_length = 100
     max_description_length = 200
