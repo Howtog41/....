@@ -121,11 +121,11 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 await asyncio.sleep(1) 
             else:
                 # Send the question and options as a text message
-                message_text = f"**Question: {text}**\n\n"
-                message_text += f"**Option A:** {options[0]}\n"
-                message_text += f"**Option B:** {options[1]}\n"
-                message_text += f"**Option C:** {options[2]}\n"
-                message_text += f"**Option D:** {options[3]}\n"
+                message_text = f"**🆀🆄🅴🆂🆃🅸🅾🅽: {text}**\n\n"
+                message_text += f"**🅾🅿🆃🅸🅾🅽 A:** {options[0]}\n"
+                message_text += f"**🅾🅿🆃🅸🅾🅽 B:** {options[1]}\n"
+                message_text += f"**🅾🅿🆃🅸🅾🅽 C:** {options[2]}\n"
+                message_text += f"**🅾🅿🆃🅸🅾🅽 D:** {options[3]}\n"
                 if description:
                     message_text += f"\nDescription: {description}"
 
