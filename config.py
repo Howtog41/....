@@ -1,3 +1,3 @@
-TOKEN = '5645711998:AAE8oAHzKi07iqcydKPnuFjzknlVa2MxxUQ'
-ADMIN_ID = 5018200809
-MONGO_URI = 'mongodb+srv://terabox255:YEx3MQH2zWdhT9gk@cluster0.nakwhlt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+TOKEN = '7961958205:AAExxM3Sbb_fvUDSMc2JmOtlTFgCOJhi8gA'
+ADMIN_ID = 768821534
+MONGO_URI = 'mongodb+srv://latestkoreandraama:nydRMd6x7tVplGNV@cluster0.nnnuejc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
