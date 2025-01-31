@@ -1,3 +1,4 @@
 telebot
 python-telegram-bot
 pymongo
+python-docx
