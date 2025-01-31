@@ -119,11 +119,11 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
             else:
                 # Send the text-based question first
                 message_text = (
-                    f"**🆀🆄🅴🆂🆃🅸🅾🅽:** {text}\n\n"
-                    f"**🅾🅿🆃🅸🅾🅽 A:** {options[0]}\n"
-                    f"**🅾🅿🆃🅸🅾🅽 B:** {options[1]}\n"
-                    f"**🅾🅿🆃🅸🅾🅽 C:** {options[2]}\n"
-                    f"**🅾🅿🆃🅸🅾🅽 D:** {options[3]}\n"
+                    f"🆀🆄🅴🆂🆃🅸🅾🅽: {text}\n\n"
+                    f"🅾🅿🆃🅸🅾🅽 A: {options[0]}\n"
+                    f"🅾🅿🆃🅸🅾🅽 B: {options[1]}\n"
+                    f"🅾🅿🆃🅸🅾🅽 C: {options[2]}\n"
+                    f"🅾🅿🆃🅸🅾🅽 D: {options[3]}\n"
                 )
                 await context.bot.send_message(chat_id=chat_id, text=message_text)
 
