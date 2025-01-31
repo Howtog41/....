@@ -118,9 +118,8 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                     explanation=description,
                     is_anonymous=True  # Set to True to make the quiz anonymous
                 )
-                await asyncio.sleep(1) 
+                
             else:
-                # Send the question and options as a text message
                 message_text = f"**🆀🆄🅴🆂🆃🅸🅾🅽: {text}**\n\n"
                 message_text += f"**🅾🅿🆃🅸🅾🅽 A:** {options[0]}\n"
                 message_text += f"**🅾🅿🆃🅸🅾🅽 B:** {options[1]}\n"
