@@ -2,6 +2,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, CallbackQueryHandler
 from helpers.db import users_collection
 from config import ADMIN_ID
+
+
 async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = update.effective_user.id
@@ -26,60 +28,79 @@ async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Command to manage channels
 
-async def channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+
+async def channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
-    if user_id == ADMIN_ID:
-
+    if user_id == ADMIN_ID:  # Check if the user is the admin
         user_info = users_collection.find_one({'user_id': user_id})
 
+        # Get the list of channels
         channels = user_info.get('channels', [])
 
-        if not channels:
-
-            await update.message.reply_text("No channels are set. Use /setchannel <channel_id> to add a new channel.")
-
+        if not channels:  # If no channels are set
+            await update.message.reply_text(
+                "No channels are set. Use /setchannel <channel_id> to add a new channel."
+            )
             return
 
-        
-
+        # Create inline keyboard with channel names
         keyboard = [
-
-            [InlineKeyboardButton(channel, callback_data=f"remove_{channel}") for channel in channels],
-
-            [InlineKeyboardButton("Add new channel", callback_data="add_channel")]
-
+            [
+                InlineKeyboardButton(
+                    channel['name'], callback_data=f"remove_prompt_{channel['id']}"
+                )
+                for channel in channels
+            ],
+            [InlineKeyboardButton("Add new channel", callback_data="add_channel")],
+            [InlineKeyboardButton("Back", callback_data="back")]
         ]
-
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await update.message.reply_text("Manage your channels:", reply_markup=reply_markup)
-
     else:
-
         await update.message.reply_text("You are not authorized to use this command.")
 
-# Handle channel management callbacks
-
-async def channel_management_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
+# Callback handler for channel management
+async def channel_callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-
     await query.answer()
 
-    data = query.data
+    callback_data = query.data
 
-    if data == "add_channel":
+    if callback_data.startswith("remove_prompt_"):
+        channel_id = callback_data.replace("remove_prompt_", "")
 
-        await query.edit_message_text(text="Please use /setchannel <channel_id> to add a new channel.")
+        # Ask for confirmation before removing the channel
+        keyboard = [
+            [
+                InlineKeyboardButton("Yes, remove", callback_data=f"remove_confirm_{channel_id}"),
+                InlineKeyboardButton("No, cancel", callback_data="cancel")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(
+            "Are you sure you want to remove this channel?",
+            reply_markup=reply_markup
+        )
 
-    elif data.startswith("remove_"):
+    elif callback_data.startswith("remove_confirm_"):
+        channel_id = callback_data.replace("remove_confirm_", "")
 
-        channel_id = data.split("_", 1)[1]
+        # Remove the channel from the database
+        users_collection.update_one(
+            {'user_id': update.effective_user.id},
+            {'$pull': {'channels': {'id': channel_id}}}
+        )
 
-        user_id = update.effective_user.id
+        await query.edit_message_text("Channel removed successfully!")
 
-        users_collection.update_one({'user_id': user_id}, {'$pull': {'channels': channel_id}})
+    elif callback_data == "add_channel":
+        await query.edit_message_text("Send the channel details to add it.")
 
-        await query.edit_message_text(text=f"Channel {channel_id} has been removed.")
+    elif callback_data == "cancel":
+        await query.edit_message_text("Action canceled.")
+
+    elif callback_data == "back":
+        await channels(update, context)
