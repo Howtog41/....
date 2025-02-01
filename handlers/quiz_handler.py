@@ -9,36 +9,53 @@ quiz_data = []
 file_title = "Quiz"  # Default title
 bot_state = None  # To track the bot's state
 
+# Define states
+COLLECTING_QUIZ = "collecting_quiz"
+SETTING_TITLE = "title"
+
+# Use a dictionary to track user-specific states
+user_states = {}
 
 async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the main flow of the bot."""
-    global bot_state
+    user_id = update.effective_user.id
+    user_states[user_id] = COLLECTING_QUIZ  # Set state for this user
 
     await update.message.reply_text(
         "Welcome! Send me an anonymous quiz, and I'll save it as a CSV file. "
         "When you're done, type 'done' to generate the file."
     )
 
-    bot_state = "collecting_quiz"  # Set state for collecting quiz
+async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle user messages based on state."""
+    user_id = update.effective_user.id
+    state = user_states.get(user_id)
 
-    while True:
-        # Wait for the user's response
-        user_message = update.message.text  # Get the user's message directly
+    if not state:
+        await update.message.reply_text("Please start by typing /start.")
+        return
 
-        if user_message and user_message[-1].message:
-            message = user_message[-1].message.text
+    message = update.message.text
 
-            if bot_state == "collecting_quiz" and user_message[-1].poll:
-                await add_quiz(user_message[-1], context)
-            elif bot_state == "collecting_quiz" and message.lower() == "done":
-                await ask_title(update, context)
-                break
-            elif bot_state == "title":
-                if message.lower() == "skip":
-                    await skip(update, context)
-                else:
-                    await set_title(update, context)
-                break
+    if state == COLLECTING_QUIZ:
+        if update.message.poll:
+            # Handle quiz collection
+            await add_quiz(update, context)
+        elif message.lower() == "done":
+            user_states[user_id] = SETTING_TITLE
+            await ask_title(update, context)
+        else:
+            await update.message.reply_text(
+                "Please send me a quiz or type 'done' when you're finished."
+            )
+    elif state == SETTING_TITLE:
+        if message.lower() == "skip":
+            await skip(update, context)
+        else:
+            await set_title(update, context)
+        # Clear user state after title is set
+        del user_states[user_id]
+
 
 
 async def add_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
