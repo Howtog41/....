@@ -63,7 +63,7 @@ async def channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("You are not authorized to use this command.")
 
 # Callback handler for channel management
-async def channel_callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def channel_management_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
