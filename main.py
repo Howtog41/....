@@ -53,7 +53,7 @@ def main():
     application.add_handler(CommandHandler("channels", channels))  # /channels command
     application.add_handler(CommandHandler("authorize", authorize))  # /authorize command
     application.add_handler(CallbackQueryHandler(channel_management_callback))  # Channel management callback
-     app.add_handler(CommandHandler("getcsv", getcsv))  # /getcsv command 
+    application.add_handler(CommandHandler("getcsv", getcsv))  # /getcsv command 
 
     # Start the bot
     application.run_polling()
