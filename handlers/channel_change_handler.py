@@ -14,7 +14,7 @@ async def change_channel(update: Update, context) -> int:
     await update.message.reply_text('Please enter the new CHANNEL name:')
     return CHANNEL
 
-async def set_channel(update: Update, context) -> int:
+async def set_channel_name(update: Update, context) -> int:
     user_data['channel_name'] = update.message.text
     await update.message.reply_text('Please send your messages (text, photos, or videos). When you are done, click /done.')
     return MESSAGE
