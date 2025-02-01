@@ -5,7 +5,7 @@ from handlers.csv_handler import upload_csv_command, handle_csv_file
 from handlers.poll_handler import choose_destination, channel_callback, send_all_polls
 from handlers.channel_handler import set_channel, channels, channel_management_callback
 from handlers.authorization_handler import authorize
-from handlers.channel_change_handler import change_channel, set_channel, receive_message, done  # Import the new handler functions
+from handlers.channel_change_handler import change_channel, set_channel_name, receive_message, done  # Import the new handler functions
 from config import TOKEN
 
 # Define states for the conversation
