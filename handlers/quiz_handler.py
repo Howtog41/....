@@ -15,10 +15,10 @@ file_title = "Quiz"  # Default title
 bot_state = None  # To track the bot's state
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send a welcome message."""
     await update.message.reply_text(
-        "Welcome! Send me an anonymous quiz, and I'll save it as a CSV file. "
+        "Send me an anonymous quiz, and I'll save it as a CSV file. "
         "Type /done when you're finished."
     )
 
