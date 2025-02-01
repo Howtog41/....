@@ -8,6 +8,9 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
+from helpers.db import users_collection
+from config import ADMIN_ID
+
 
 # Global variables
 quiz_data = []
@@ -16,11 +19,16 @@ bot_state = None  # To track the bot's state
 
 
 async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Send a welcome message."""
-    await update.message.reply_text(
-        "Send me an anonymous quiz, and I'll save it as a CSV file. "
-        "Type /done when you're finished."
-    )
+    user_id = update.effective_user.id
+    user_info = users_collection.find_one({'user_id': user_id})
+
+    if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
+        
+        """Send a welcome message."""
+        await update.message.reply_text(
+            "Send me an anonymous quiz, and I'll save it as a CSV file. "
+            "Type /done when you're finished."
+        )
 
 
 async def add_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
