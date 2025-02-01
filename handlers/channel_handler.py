@@ -7,8 +7,9 @@ from config import ADMIN_ID
 async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = update.effective_user.id
+    user_info = users_collection.find_one({'user_id': user_id})
 
-    if user_id == ADMIN_ID:
+    if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
 
         try:
 
@@ -32,9 +33,10 @@ async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    user_info = users_collection.find_one({'user_id': user_id})
 
-    if user_id == ADMIN_ID:  # Check if the user is the admin
-        user_info = users_collection.find_one({'user_id': user_id})
+    if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)): # Check if the user is the admin
+        
 
         # Get the list of channels (assuming it's a list of strings)
         channels = user_info.get('channels', [])
