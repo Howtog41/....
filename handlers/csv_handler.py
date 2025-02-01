@@ -1,5 +1,6 @@
 import csv
 import logging
+import asyncio  # Make sure to import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, CallbackQueryHandler
 from helpers.db import users_collection
@@ -85,6 +86,7 @@ async def handle_csv_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 #yha se hendler add krna hai 
 
+
 async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -94,8 +96,23 @@ async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if choice == 'bot':
         chat_id = query.message.chat_id
         questions = context.user_data.get('questions', [])
-        await send_all_polls(chat_id, context, questions)
-        await query.edit_message_text("Quizzes have been sent to the bot.")
+        
+        # Send polls in batches
+        total_polls = len(questions)
+        batch_size = 20
+        sent_polls = 0
+        
+        # Loop through the questions and send them in batches
+        for i in range(0, total_polls, batch_size):
+            batch = questions[i:i + batch_size]
+            await send_all_polls(chat_id, context, batch)
+            sent_polls += len(batch)
+            await query.edit_message_text(f"{sent_polls} polls have been sent to the bot.")
+            
+            # Wait for 30 seconds before sending the next batch
+            await asyncio.sleep(30)
+        
+        await query.edit_message_text(f"Total of {sent_polls} quizzes have been sent to the bot.")
         return ConversationHandler.END
 
     elif choice == 'channel':
@@ -104,8 +121,22 @@ async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE)
             if len(user_info['channels']) == 1:
                 channel_id = user_info['channels'][0]
                 questions = context.user_data.get('questions', [])
-                await send_all_polls(channel_id, context, questions)
-                await query.edit_message_text(f"Quizzes have been sent to {channel_id}.")
+                
+                # Send polls in batches to the channel
+                total_polls = len(questions)
+                batch_size = 20
+                sent_polls = 0
+                
+                for i in range(0, total_polls, batch_size):
+                    batch = questions[i:i + batch_size]
+                    await send_all_polls(channel_id, context, batch)
+                    sent_polls += len(batch)
+                    await query.edit_message_text(f"{sent_polls} polls have been sent to {channel_id}.")
+                    
+                    # Wait for 30 seconds before sending the next batch
+                    await asyncio.sleep(30)
+                
+                await query.edit_message_text(f"Total of {sent_polls} quizzes have been sent to {channel_id}.")
                 return ConversationHandler.END
             else:
                 keyboard = [
@@ -122,11 +153,26 @@ async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await query.edit_message_text("Invalid choice. Please select 'bot' or 'channel'.")
         return CHOOSE_DESTINATION
 
+
 async def channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     channel_id = query.data
     questions = context.user_data.get('questions', [])
-    await send_all_polls(channel_id, context, questions)
-    await query.edit_message_text(text=f"Quizzes have been sent to {channel_id}.")
+    
+    # Send polls in batches to the selected channel
+    total_polls = len(questions)
+    batch_size = 20
+    sent_polls = 0
+    
+    for i in range(0, total_polls, batch_size):
+        batch = questions[i:i + batch_size]
+        await send_all_polls(channel_id, context, batch)
+        sent_polls += len(batch)
+        await query.edit_message_text(f"{sent_polls} polls have been sent to {channel_id}.")
+        
+        # Wait for 30 seconds before sending the next batch
+        await asyncio.sleep(30)
+    
+    await query.edit_message_text(f"Total of {sent_polls} quizzes have been sent to {channel_id}.")
     return ConversationHandler.END
