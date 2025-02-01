@@ -10,7 +10,7 @@ file_title = "Quiz"  # Default title
 bot_state = None  # To track the bot's state
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the main flow of the bot."""
     global bot_state
 
