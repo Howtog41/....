@@ -23,7 +23,7 @@ async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     while True:
         # Wait for the user's response
-        user_message = await context.bot.get_updates(timeout=30)
+        user_message = await context.bot(timeout=30)
 
         if user_message and user_message[-1].message:
             message = user_message[-1].message.text
