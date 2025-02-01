@@ -6,6 +6,7 @@ from handlers.poll_handler import choose_destination, channel_callback, send_all
 from handlers.channel_handler import set_channel, channels, channel_management_callback
 from handlers.authorization_handler import authorize
 from handlers.channel_change_handler import change_channel, set_channel_name, receive_message, done  # Import the new handler functions
+from handlers.quiz_handler import getcsv
 from config import TOKEN
 
 # Define states for the conversation
@@ -52,6 +53,7 @@ def main():
     application.add_handler(CommandHandler("channels", channels))  # /channels command
     application.add_handler(CommandHandler("authorize", authorize))  # /authorize command
     application.add_handler(CallbackQueryHandler(channel_management_callback))  # Channel management callback
+     app.add_handler(CommandHandler("getcsv", getcsv))  # /getcsv command 
 
     # Start the bot
     application.run_polling()
