@@ -29,6 +29,10 @@ async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Send me an anonymous quiz, and I'll save it as a CSV file. "
             "Type /done when you're finished."
         )
+    else:
+
+        await update.message.reply_text("You are not authorized to use this command.Contact admin @lkd_ak")
+
 
 
 async def add_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
