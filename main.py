@@ -6,7 +6,7 @@ from handlers.poll_handler import choose_destination, channel_callback, send_all
 from handlers.channel_handler import set_channel, channels, channel_management_callback
 from handlers.authorization_handler import authorize
 from handlers.channel_change_handler import change_channel, set_channel_name, receive_message, done  # Import the new handler functions
-from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip, help_command
+from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip, help
 from config import TOKEN
 
 # Define states for the conversation
