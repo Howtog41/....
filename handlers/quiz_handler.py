@@ -3,59 +3,52 @@ import csv
 import re
 from telegram import Update, Poll
 from telegram.ext import (
-    CommandHandler,
-    MessageHandler,
-    filters,
-    ContextTypes,
+    Application, CommandHandler, MessageHandler, filters, ContextTypes
 )
 from helpers.db import users_collection
 from config import ADMIN_ID
 
-
-# Global variables
+# Global Data
 quiz_data = []
-file_title = "Quiz"  # Default title
-bot_state = None  # To track the bot's state
+file_title = "Quiz"
+user_state = {}  # Stores each user's state (collecting/title)
 
-
+# -------------------- GETCSV --------------------
 async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     user_info = users_collection.find_one({'user_id': user_id})
 
     if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
-        
-        """Send a welcome message."""
+        user_state[user_id] = {'collecting': True, 'title': False}
         await update.message.reply_text(
-            "Send me an anonymous quiz, and I'll save it as a CSV file. "
-            "Type /done when you're finished."
+            "✅ Authorized.\n\nSend me anonymous quiz polls (quiz mode only).\nWhen finished, type /done."
         )
     else:
+        await update.message.reply_text(
+            "🚫 You are not authorized to use this command.\nContact admin @lkd_ak"
+        )
 
-        await update.message.reply_text("You are not authorized to use this command.Contact admin @lkd_ak")
-
-
-
+# -------------------- ADD QUIZ --------------------
 async def add_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Add quiz data from anonymous polls."""
     global quiz_data
+    user_id = update.effective_user.id
+
+    # Check if quiz collection is active
+    if not user_state.get(user_id, {}).get('collecting', False):
+        return  # Ignore if not in quiz collection mode
+
     if update.message.poll and update.message.poll.type == Poll.QUIZ:
         poll = update.message.poll
-        question = poll.question
-
-        # Remove any leading [ ] from the question
-        question = re.sub(r"^\[.*?\]\s*", "", question)
-
+        question = re.sub(r"^\[.*?\]\s*", "", poll.question)
         options = [opt.text for opt in poll.options]
         correct_option_id = poll.correct_option_id
 
-        # Process the description to remove links, usernames, and URLs
         explanation = poll.explanation if poll.explanation else ""
-        explanation = re.sub(r"@\w+", "", explanation)  # Remove @username
-        explanation = re.sub(r"https?://\S+|www\.\S+", "", explanation)  # Remove links and URLs
-        explanation = explanation.strip()  # Remove extra spaces
+        explanation = re.sub(r"@\w+", "", explanation)
+        explanation = re.sub(r"https?://\S+|www\.\S+", "", explanation)
+        explanation = explanation.strip()
 
-        # Ensure correct answer is identified
-        correct_answer = options[correct_option_id] if correct_option_id is not None else "No correct answer provided"
+        correct_answer = options[correct_option_id] if correct_option_id is not None else "No correct answer"
 
         quiz_data.append({
             "question": question,
@@ -63,71 +56,88 @@ async def add_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "answer": correct_answer,
             "description": explanation
         })
+
         await update.message.reply_text(
-            f"Quiz question added: '{question}'\nSend more or type /done to save the file."
+            f"✅ Added: '{question[:50]}...'\nSend more or type /done."
         )
     else:
-        await update.message.reply_text("Please send an anonymous quiz (in quiz mode).")
+        await update.message.reply_text("⚠️ Please send an *anonymous quiz poll* (in quiz mode).")
 
-
+# -------------------- /DONE COMMAND --------------------
 async def ask_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Ask for the title."""
-    global bot_state
-    bot_state = "title"
+    user_id = update.effective_user.id
+
+    if not user_state.get(user_id, {}).get('collecting', False):
+        await update.message.reply_text("❗Start with /getcsv first.")
+        return
+
+    user_state[user_id]['collecting'] = False
+    user_state[user_id]['title'] = True
+
     await update.message.reply_text(
-        "Please provide a title for the CSV file, or type /skip to use the default title."
+        "📄 Please send a title for the CSV file.\nOr type /skip to use the default title 'Quiz'."
     )
 
-
+# -------------------- SET TITLE --------------------
 async def set_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Set the file title."""
-    global file_title, bot_state
-    file_title = update.message.text
-    bot_state = None  # Reset the state
-    await generate_files(update, context)
+    global file_title
+    user_id = update.effective_user.id
 
-
-async def skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Skip title setting."""
-    global bot_state
-    if bot_state == "title":
-        bot_state = None
-        await update.message.reply_text("Using default title. Generating the file...")
+    if user_state.get(user_id, {}).get('title', False):
+        title = update.message.text.strip()
+        # Remove unsafe characters
+        file_title = "".join(c for c in title if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        user_state[user_id]['title'] = False
         await generate_files(update, context)
 
+# -------------------- /SKIP COMMAND --------------------
+async def skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_state.get(user_id, {}).get('title', False):
+        user_state[user_id]['title'] = False
+        await update.message.reply_text("📂 Using default title 'Quiz'. Generating file...")
+        await generate_files(update, context)
 
+# -------------------- GENERATE CSV FILE --------------------
 async def generate_files(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Generate a CSV file from the collected quiz data."""
     global quiz_data, file_title
 
     if not quiz_data:
-        await update.message.reply_text("No quiz data found. Please send some quizzes first.")
+        await update.message.reply_text("⚠️ No quiz data found. Please send some quizzes first.")
         return
 
-    # Generate .csv file
-    csv_file_path = f"{file_title}.csv"
-    with open(csv_file_path, mode="w", newline="", encoding="utf-8") as csv_file:
-        csv_writer = csv.writer(csv_file)
-        # Write header
-        csv_writer.writerow(["Question", "Option A", "Option B", "Option C", "Option D", "Answer", "Description"])
-        for quiz in quiz_data:
-            options = quiz["options"]
-            correct_index = quiz["options"].index(quiz["answer"]) if quiz["answer"] in quiz["options"] else None
-            correct_option_letter = chr(65 + correct_index) if correct_index is not None else "N/A"  # Convert to A, B, C, D
-            csv_writer.writerow([
-                quiz["question"],
-                options[0] if len(options) > 0 else "",
-                options[1] if len(options) > 1 else "",
-                options[2] if len(options) > 2 else "",
-                options[3] if len(options) > 3 else "",
-                correct_option_letter,
-                quiz["description"]  # Add the cleaned description
+    filename = f"{file_title}.csv"
+    with open(filename, mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Question", "Option A", "Option B", "Option C", "Option D", "Answer", "Description"])
+        for q in quiz_data:
+            opts = q["options"]
+            correct_index = opts.index(q["answer"]) if q["answer"] in opts else None
+            correct_letter = chr(65 + correct_index) if correct_index is not None else "N/A"
+
+            writer.writerow([
+                q["question"],
+                opts[0] if len(opts) > 0 else "",
+                opts[1] if len(opts) > 1 else "",
+                opts[2] if len(opts) > 2 else "",
+                opts[3] if len(opts) > 3 else "",
+                correct_letter,
+                q["description"]
             ])
 
-    # Send the CSV file to the user
-    with open(csv_file_path, "rb") as csv_file:
-        await update.message.reply_document(csv_file)
+    # Send CSV to user
+    with open(filename, "rb") as f:
+        await update.message.reply_document(f)
 
-    # Cleanup
-    os.remove(csv_file_path)
+    os.remove(filename)
     quiz_data = []
+    await update.message.reply_text("✅ File sent and data cleared.")
+
+# -------------------- SETUP HANDLERS (in main.py or entry point) --------------------
+
+def setup_handlers(app):
+    app.add_handler(CommandHandler("getcsv", getcsv))
+    app.add_handler(CommandHandler("done", ask_title))
+    app.add_handler(CommandHandler("skip", skip))
+    app.add_handler(MessageHandler(filters.POLL, add_quiz))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, set_title))
