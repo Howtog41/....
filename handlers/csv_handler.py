@@ -10,12 +10,8 @@ from telegram.error import RetryAfter
 UPLOAD_CSV, CHOOSE_DESTINATION = range(2)
 
 async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     user_id = update.effective_user.id
-
     user_info = users_collection.find_one({'user_id': user_id})
-
-    
 
     if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
         user_state[user_id] = {'collecting': True, 'title': False}
