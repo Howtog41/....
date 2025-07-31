@@ -65,7 +65,7 @@ def main():
 
 
 if __name__ == '__main__':
-    app = Application.builder().token(BOT_TOKEN).build()
+    app = Application.builder().token(TOKEN).build()
     register_handlers(app)
     app.run_polling()
 
