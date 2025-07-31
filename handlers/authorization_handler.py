@@ -65,7 +65,3 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(f"User {uid_to_remove} has been removed from authorized list.")
 
 # ✅ Handlers to be added in your main app
-def register_handlers(application):
-    application.add_handler(CommandHandler("authorize", authorize))
-    application.add_handler(CommandHandler("listauthorized", list_authorized))
-    application.add_handler(CallbackQueryHandler(button_handler))
