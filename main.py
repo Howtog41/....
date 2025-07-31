@@ -60,6 +60,9 @@ def main():
     application.add_handler(MessageHandler(filters.POLL, add_quiz))
     application.add_handler(CommandHandler("done", ask_title))
     application.add_handler(CommandHandler("skip", skip))
+    application.add_handler(CommandHandler("authorize", authorize))
+    application.add_handler(CommandHandler("listauthorized", list_authorized))
+    application.add_handler(CallbackQueryHandler(button_handler))
 
 
 
