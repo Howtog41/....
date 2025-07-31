@@ -63,6 +63,9 @@ def main():
     # Start the bot
     application.run_polling()
 
-if __name__ == "__main__":
-    print("Bot is running...")
-    main()
+
+if __name__ == '__main__':
+    app = Application.builder().token(BOT_TOKEN).build()
+    register_handlers(app)
+    app.run_polling()
+
