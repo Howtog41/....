@@ -8,6 +8,8 @@ from config import ADMIN_ID
 from telegram.error import RetryAfter
 
 UPLOAD_CSV, CHOOSE_DESTINATION = range(2)
+user_state = {}
+
 
 async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
