@@ -9,7 +9,6 @@ from handlers.channel_change_handler import change_channel, set_channel_name, re
 from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip
 from config import TOKEN
 
-
 # Define states for the conversation
 UPLOAD_CSV, CHOOSE_DESTINATION, CHOOSE_CHANNEL = range(3)
 CHANNEL, MESSAGE = range(2)  # States for the change_channel conversation
@@ -58,15 +57,11 @@ def main():
     application.add_handler(MessageHandler(filters.POLL, add_quiz))
     application.add_handler(CommandHandler("done", ask_title))
     application.add_handler(CommandHandler("skip", skip))
-    application.add_handler(CommandHandler("authorize", authorize))
-    application.add_handler(CommandHandler("listauthorized", list_authorized))
-    application.add_handler(CallbackQueryHandler(button_handler))
 
 
 
     # Start the bot
     application.run_polling()
-
 
 if __name__ == "__main__":
     print("Bot is running...")
