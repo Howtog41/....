@@ -1,7 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from helpers.db import users_collection
-
+import asyncio
 async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -140,6 +140,7 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                     explanation=description,
                     is_anonymous=True
                 )
+                await asyncio.sleep(1)  # Add this line 👈
         except Exception as e:
             # Handle and notify about errors
             error_message = (
