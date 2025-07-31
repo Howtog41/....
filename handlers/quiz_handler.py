@@ -79,16 +79,30 @@ async def ask_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # -------------------- SET TITLE --------------------
+
 async def set_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global file_title
     user_id = update.effective_user.id
 
-    if user_state.get(user_id, {}).get('title', False):
+    # Debug check
+    if user_id not in user_state:
+        await update.message.reply_text("⚠️ No active session found. Use /getcsv first.")
+        return
+
+    if user_state[user_id].get('title', False):
         title = update.message.text.strip()
-        # Remove unsafe characters
+
+        if not title:
+            await update.message.reply_text("❗Title cannot be empty. Try again or type /skip.")
+            return
+
+        # Sanitize filename
         file_title = "".join(c for c in title if c.isalnum() or c in (' ', '-', '_')).rstrip()
-        user_state[user_id]['title'] = False
+        user_state[user_id]['title'] = False  # reset
+        await update.message.reply_text(f"✅ Title set to: {file_title}\nGenerating file...")
         await generate_files(update, context)
+    else:
+        await update.message.reply_text("⚠️ Not expecting a title now. Use /getcsv to start.")
 
 # -------------------- /SKIP COMMAND --------------------
 async def skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
