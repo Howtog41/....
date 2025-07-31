@@ -151,5 +151,5 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 continue
 
         await context.bot.send_message(chat_id=chat_id, text=f"✅ Batch {batch_num+1} complete.\n")
-        await asyncio.sleep(3)  # Wait before next batch
+        await asyncio.sleep(30)  # Wait before next batch
                 
