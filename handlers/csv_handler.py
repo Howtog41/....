@@ -17,7 +17,8 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     
 
-    if user_info or user_id == ADMIN_ID:
+    if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
+        user_state[user_id] = {'collecting': True, 'title': False}
 
         await update.message.reply_text(
         
