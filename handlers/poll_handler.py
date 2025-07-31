@@ -57,7 +57,7 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
     max_option_length = 100
     max_description_length = 200
 
-    chunk_size = 19
+    chunk_size = 15
     total_batches = ceil(len(questions) / chunk_size)
 
     for batch_num in range(total_batches):
