@@ -8,8 +8,6 @@ from handlers.authorization_handler import authorize
 from handlers.channel_change_handler import change_channel, set_channel_name, receive_message, done  # Import the new handler functions
 from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip
 from config import TOKEN
-from handlers import register_handlers
-
 
 
 # Define states for the conversation
