@@ -171,9 +171,9 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 break  # agar user ne message delete kar diya ya edit fail hua to loop chhodo
 
 # 30 second ke baad message delete
-try:
-    await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
-except:
-    pass
+        try:
+            await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
+        except:
+            pass
  # Wait before next batch
                 
