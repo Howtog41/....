@@ -11,7 +11,7 @@ async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if choice == 'bot':
         chat_id = query.message.chat_id
         questions = context.user_data.get('questions', [])
-        await send_all_poll(chat_id, context, questions)
+        await send_all_poll(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
         await query.edit_message_text("Quizzes have been sent to the bot.")
         return ConversationHandler.END
 
@@ -44,7 +44,7 @@ async def channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     channel_id = query.data
     questions = context.user_data.get('questions', [])
-    await send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
+    await send_all_polls(channel_id, context, questions)
     await query.edit_message_text(text=f"Quizzes have been sent to {channel_id}.")
     return ConversationHandler.END
 
