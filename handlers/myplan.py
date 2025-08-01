@@ -26,16 +26,16 @@ async def myplan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     status = "✅ Active" if end_date > now and authorized else "❌ Expired"
 
     text = (
-        f"👤 *User ID:* `{user_id}`\n"
-        f"📅 *Plan Start:* `{start_date.strftime('%Y-%m-%d')}`\n"
-        f"⏳ *Plan Expires:* `{end_date.strftime('%Y-%m-%d')}`\n"
-        f"🕒 *Remaining Days:* `{max(0, remaining_days)} day(s)`\n"
-        f"📌 *Status:* {status}\n\n"
-        f"🤖 *Bot Info:*\n"
+        f"👤 <b>User ID:</b> <code>{user_id}</code>\n"
+        f"📅 <b>Plan Start:</b> <code>{start_date.strftime('%Y-%m-%d')}</code>\n"
+        f"⏳ <b>Plan Expires:</b> <code>{end_date.strftime('%Y-%m-%d')}</code>\n"
+        f"🕒 <b>Remaining Days:</b> <code>{max(0, remaining_days)} day(s)</code>\n"
+        f"📌 <b>Status:</b> {status}\n\n"
+        f"🤖 <b>Bot Info:</b>\n"
         f"- Upload CSV to convert into MCQs\n"
         f"- Get polls for quizzes and explanations\n"
         f"- Works with anonymous quiz polls\n\n"
-        f"👮 *Admin Contact:* @lkd_ak"
+        f"👮 <b>Admin Contact:</b> @lkd_ak"
     )
 
-    await update.message.reply_text(text, parse_mode="Markdown")
+    await update.message.reply_text(text, parse_mode="HTML")
