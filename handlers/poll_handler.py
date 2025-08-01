@@ -67,10 +67,14 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions,
 
             await send_questions(chat_id, context, current_batch)
 
-            countdown = 2
-            msg = await context.bot.send_message(chat_id=chat_id, text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {countdown} seconds...")
+            countdown = 30
+            msg = await context.bot.send_message(
+                chat_id=chat_id,
+                text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {countdown} seconds..."
+            )
+
             for i in range(countdown - 1, 0, -1):
-                await asyncio.sleep(30)
+                await asyncio.sleep(1)
                 try:
                     await context.bot.edit_message_text(
                         chat_id=chat_id,
@@ -78,13 +82,14 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions,
                         text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {i} seconds..."
                     )
                 except:
-                    break
+        # Don't break — continue sleeping even if edit fails
+                    pass
+
+            await asyncio.sleep(1)  # final 1 second
             try:
                 await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
             except:
                 pass
-    else:
-        await send_questions(chat_id, context, questions)
 
 
 async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions):
