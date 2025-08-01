@@ -23,9 +23,9 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
             "👉 ꜰᴏʀᴍᴀᴛ: \n"
             "```\n"
             "\"Question\", \"Option A\", \"Option B\", \"Option C\", \"Option D\", \"Answer\", \"Description\"\n"
-            "```\n"
             "👉 ᴛʜᴇ \"ᴀɴꜱᴡᴇʀ\" ꜱʜᴏᴜʟᴅ ʙᴇ ɪɴ A, B, C, D ꜰᴏʀᴍᴀᴛ.\n"
             "👉 ᴛʜᴇ \"ᴅᴇꜱᴄʀɪᴘᴛɪᴏɴ\" ɪꜱ ᴏᴘᴛɪᴏɴᴀʟ. ɪꜰ ɴᴏᴛ ᴘʀᴏᴠɪᴅᴇᴅ, ɪᴛ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ꜰɪʟʟᴇᴅ.\n\n"
+            "```\n"
             "📥 Example CSV: [Download](https://t.me/How_To_Google/10)",
             parse_mode='Markdown'
         )
