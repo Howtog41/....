@@ -19,15 +19,17 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         user_state[user_id] = {'collecting': True, 'title': False}
 
         await update.message.reply_text(
-        
-         "📂 ᴛᴏ ᴜᴘʟᴏᴀᴅ ʏᴏᴜʀ ᴄꜱᴠ ꜰɪʟᴇ ꜰᴏʀ ᴍᴄQ ᴄᴏɴᴠᴇʀꜱɪᴏɴ, ᴘʟᴇᴀꜱᴇ ᴇɴꜱᴜʀᴇ ɪᴛ ᴍᴇᴇᴛꜱ ᴛʜᴇ ꜰᴏʟʟᴏᴡɪɴɢ ʀᴇQᴜɪʀᴇᴍᴇɴᴛꜱ:  \n"
-    "👉 ꜰᴏʀᴍᴀᴛ: \"Question\", \"Option A\", \"Option B\", \"Option C\", \"Option D\", \"Answer\", \"Description\".  \n"
-    "👉 ᴛʜᴇ \"ᴀɴꜱᴡᴇʀ\" ꜱʜᴏᴜʟᴅ ʙᴇ ɪɴ ᴀ, ʙ, ᴄ, ᴅ ꜰᴏʀᴍᴀᴛ.  \n"
-    "👉 ᴛʜᴇ \"ᴅᴇꜱᴄʀɪᴘᴛɪᴏɴ\" ɪꜱ ᴏᴘᴛɪᴏɴᴀʟ. ɪꜰ ɴᴏᴛ ᴘʀᴏᴠɪᴅᴇᴅ, ɪᴛ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ꜰɪʟʟᴇᴅ.  \n"
-    "ᴇxᴀᴍᴘʟᴇ ᴄꜱᴠ ꜰᴏʀᴍᴀᴛ: \n"
-    "[Download Example CSV](https://t.me/How_To_Google/10) \n"
-            
+            "📂 ᴛᴏ ᴜᴘʟᴏᴀᴅ ʏᴏᴜʀ ᴄꜱᴠ ꜰɪʟᴇ ꜰᴏʀ ᴍᴄQ ᴄᴏɴᴠᴇʀꜱɪᴏɴ, ᴘʟᴇᴀꜱᴇ ᴇɴꜱᴜʀᴇ ɪᴛ ᴍᴇᴇᴛꜱ ᴛʜᴇ ꜰᴏʟʟᴏᴡɪɴɢ ʀᴇQᴜɪʀᴇᴍᴇɴᴛꜱ:\n\n"
+            "👉 ꜰᴏʀᴍᴀᴛ: \n"
+            "```\n"
+            "\"Question\", \"Option A\", \"Option B\", \"Option C\", \"Option D\", \"Answer\", \"Description\"\n"
+            "```\n"
+            "👉 ᴛʜᴇ \"ᴀɴꜱᴡᴇʀ\" ꜱʜᴏᴜʟᴅ ʙᴇ ɪɴ A, B, C, D ꜰᴏʀᴍᴀᴛ.\n"
+            "👉 ᴛʜᴇ \"ᴅᴇꜱᴄʀɪᴘᴛɪᴏɴ\" ɪꜱ ᴏᴘᴛɪᴏɴᴀʟ. ɪꜰ ɴᴏᴛ ᴘʀᴏᴠɪᴅᴇᴅ, ɪᴛ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ꜰɪʟʟᴇᴅ.\n\n"
+            "📥 Example CSV: [Download](https://t.me/How_To_Google/10)",
+            parse_mode='Markdown'
         )
+
 
         return UPLOAD_CSV
 
