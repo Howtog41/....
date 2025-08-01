@@ -155,6 +155,25 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 await context.bot.send_message(chat_id=chat_id, text="⚠️ CSV me kuch gadbadi hai.")
                 continue
 
-        await context.bot.send_message(chat_id=chat_id, text=f"✅ Batch {batch_num+1} complete.\n")
-        await asyncio.sleep(30)  # Wait before next batch
+
+        countdown = 30
+        msg = await context.bot.send_message(chat_id=chat_id, text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {countdown} seconds...")
+
+        for i in range(countdown - 1, 0, -1):
+            await asyncio.sleep(1)
+            try:
+                await context.bot.edit_message_text(
+                    chat_id=chat_id,
+                    message_id=msg.message_id,
+                    text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {i} seconds..."
+                )
+            except:
+                break  # agar user ne message delete kar diya ya edit fail hua to loop chhodo
+
+# 30 second ke baad message delete
+try:
+    await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
+except:
+    pass
+ # Wait before next batch
                 
