@@ -7,6 +7,7 @@ from handlers.channel_handler import set_channel, channels, channel_management_c
 from handlers.authorization_handler import authorize
 from handlers.channel_change_handler import change_channel, set_channel_name, receive_message, done  # Import the new handler functions
 from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip
+from handlers.myplan import myplan  # adjust import path if needed
 from config import TOKEN
 
 # Define states for the conversation
@@ -57,7 +58,7 @@ def main():
     application.add_handler(MessageHandler(filters.POLL, add_quiz))
     application.add_handler(CommandHandler("done", ask_title))
     application.add_handler(CommandHandler("skip", skip))
-
+    application.add_handler(CommandHandler("myplan", myplan))
 
 
     # Start the bot
