@@ -68,10 +68,10 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
         msg = await context.bot.send_message(chat_id=chat_id, text=f"📦 Sending batch {batch_num+1}/{total_batches}...")
 
         # 5 second rukna
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
 
         # Message delete karna
-        await context.bot.delete_message(chat_id=chat_id, message_id=msg.
+        await context.bot.delete_message(chat_id=chat_id, message_id=msg..message_id)
         for question in current_batch:
             try:
                 text = question.get('Question', '').strip()
