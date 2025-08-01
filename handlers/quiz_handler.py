@@ -14,20 +14,30 @@ file_title = "Quiz"
 user_state = {}  # Stores each user's state (collecting/title)
 
 # -------------------- GETCSV --------------------
+from datetime import datetime
+
 async def getcsv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     user_info = users_collection.find_one({'user_id': user_id})
+    now = datetime.now()
 
-    if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
+    if user_id == ADMIN_ID:
+        pass_access = True
+    elif user_info and user_info.get('authorized', False):
+        expires_on = user_info.get('expires_on')
+        pass_access = expires_on and expires_on > now
+    else:
+        pass_access = False
+
+    if pass_access:
         user_state[user_id] = {'collecting': True, 'title': False}
         await update.message.reply_text(
             "✅ Authorized.\n\nSend me anonymous quiz polls (quiz mode only).\nWhen finished, type /done."
         )
     else:
         await update.message.reply_text(
-            "🚫 You are not authorized to use this command.\nContact admin @lkd_ak"
+            "🚫 You are not authorized to use this command.\nYour trial may have expired.\nContact admin @lkd_ak"
         )
-
 # -------------------- ADD QUIZ --------------------
 async def add_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global quiz_data
