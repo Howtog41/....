@@ -74,7 +74,7 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions,
             )
 
             for i in range(countdown - 1, 0, -1):
-                await asyncio.sleep(1)
+                await asyncio.sleep(10)
                 try:
                     await context.bot.edit_message_text(
                         chat_id=chat_id,
