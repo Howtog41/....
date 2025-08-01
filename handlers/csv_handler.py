@@ -21,7 +21,7 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await update.message.reply_text(
         
          "📂 ᴛᴏ ᴜᴘʟᴏᴀᴅ ʏᴏᴜʀ ᴄꜱᴠ ꜰɪʟᴇ ꜰᴏʀ ᴍᴄQ ᴄᴏɴᴠᴇʀꜱɪᴏɴ, ᴘʟᴇᴀꜱᴇ ᴇɴꜱᴜʀᴇ ɪᴛ ᴍᴇᴇᴛꜱ ᴛʜᴇ ꜰᴏʟʟᴏᴡɪɴɢ ʀᴇQᴜɪʀᴇᴍᴇɴᴛꜱ:  \n"
-    "👉 ꜰᴏʀᴍᴀᴛ: "Question", "Option A", "Option B", "Option C", "Option D", "Answer", "Description".  \n"
+    "👉 ꜰᴏʀᴍᴀᴛ: \"Question\", \"Option A\", \"Option B\", \"Option C\", \"Option D\", \"Answer\", \"Description\".  \n"
     "👉 ᴛʜᴇ \"ᴀɴꜱᴡᴇʀ\" ꜱʜᴏᴜʟᴅ ʙᴇ ɪɴ ᴀ, ʙ, ᴄ, ᴅ ꜰᴏʀᴍᴀᴛ.  \n"
     "👉 ᴛʜᴇ \"ᴅᴇꜱᴄʀɪᴘᴛɪᴏɴ\" ɪꜱ ᴏᴘᴛɪᴏɴᴀʟ. ɪꜰ ɴᴏᴛ ᴘʀᴏᴠɪᴅᴇᴅ, ɪᴛ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ꜰɪʟʟᴇᴅ.  \n"
     "ᴇxᴀᴍᴘʟᴇ ᴄꜱᴠ ꜰᴏʀᴍᴀᴛ: \n"
@@ -201,4 +201,4 @@ async def channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await send_message_with_retry(context.bot, channel_id, f"Total of {sent_polls} quizzes have been sent to {channel_id}.")
     return ConversationHandler.END
-
+    
