@@ -70,7 +70,7 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions,
             countdown = 30
             msg = await context.bot.send_message(chat_id=chat_id, text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {countdown} seconds...")
             for i in range(countdown - 1, 0, -1):
-                await asyncio.sleep(1)
+                await asyncio.sleep(30)
                 try:
                     await context.bot.edit_message_text(
                         chat_id=chat_id,
