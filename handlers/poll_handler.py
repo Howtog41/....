@@ -1,18 +1,44 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, ConversationHandler, CallbackQueryHandler, MessageHandler, filters
 from helpers.db import users_collection
 import asyncio
+from math import ceil
+
+ASK_TAG = 101
+CHOOSE_CHANNEL = 102
+CHOOSE_DESTINATION = 103
+
 async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
     choice = query.data
 
+    context.user_data["destination_choice"] = choice  # Save for use after tag input
+
+    await query.edit_message_text(
+        "📢 Kya aap kisi tag/channel name ko MCQ ke description me jodna chahte hain?\n\n"
+        "Udaaharan: `@SecondCoaching`, `@howtogoogle`, ya agar skip karna ho to `skip` likhein.",
+        parse_mode="Markdown"
+    )
+    return ASK_TAG
+
+async def ask_custom_tag(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    tag = update.message.text.strip()
+    if tag.lower() != "skip":
+        context.user_data["custom_tag"] = tag if tag.startswith('@') else f"@{tag}"
+        await update.message.reply_text(f"✅ Tag set ho gaya: `{context.user_data['custom_tag']}`", parse_mode="Markdown")
+    else:
+        context.user_data["custom_tag"] = None
+        await update.message.reply_text("❎ Koi tag nahi joda jayega.")
+
+    choice = context.user_data.get("destination_choice")
+    user_id = update.effective_user.id
+    questions = context.user_data.get('questions', [])
+
     if choice == 'bot':
-        chat_id = query.message.chat_id
-        questions = context.user_data.get('questions', [])
-        await send_questions(chat_id, context, questions)
-        await query.edit_message_text("Quizzes have been sent to the bot.")
+        await send_questions(update.effective_chat.id, context, questions)
+        await update.message.reply_text("📩 Quizzes have been sent to the bot.")
         return ConversationHandler.END
 
     elif choice == 'channel':
@@ -20,24 +46,17 @@ async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE)
         if 'channels' in user_info and user_info['channels']:
             if len(user_info['channels']) == 1:
                 channel_id = user_info['channels'][0]
-                questions = context.user_data.get('questions', [])
-                await send_all_polls(channel_id, context, questions, use_batches=True)
-                await query.edit_message_text(f"Quizzes have been sent to {channel_id}.")
+                await send_all_polls(channel_id, context, questions)
+                await update.message.reply_text(f"📩 Quizzes have been sent to {channel_id}.")
                 return ConversationHandler.END
             else:
-                keyboard = [
-                    [InlineKeyboardButton(channel, callback_data=channel) for channel in user_info['channels']]
-                ]
+                keyboard = [[InlineKeyboardButton(channel, callback_data=channel)] for channel in user_info['channels']]
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                await query.edit_message_text("Choose a channel:", reply_markup=reply_markup)
+                await update.message.reply_text("Choose a channel:", reply_markup=reply_markup)
                 return CHOOSE_CHANNEL
         else:
-            await query.edit_message_text("No channels are set. Please set a channel using /setchannel <channel_id>.")
+            await update.message.reply_text("❌ No channels found. Please use /setchannel.")
             return ConversationHandler.END
-
-    else:
-        await query.edit_message_text("Invalid choice. Please select 'bot' or 'channel'.")
-        return CHOOSE_DESTINATION
 
 async def channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -48,11 +67,9 @@ async def channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text=f"Quizzes have been sent to {channel_id}.")
     return ConversationHandler.END
 
-import asyncio
-from math import ceil
-
 async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions, use_batches=True):
-    ...
+    custom_tag = context.user_data.get("custom_tag", "@SecondCoaching")
+
     if use_batches:
         chunk_size = 15
         total_batches = ceil(len(questions) / chunk_size)
@@ -82,21 +99,20 @@ async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions,
                         text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {i} seconds..."
                     )
                 except:
-        # Don't break — continue sleeping even if edit fails
                     pass
 
-            await asyncio.sleep(1)  # final 1 second
+            await asyncio.sleep(1)
             try:
                 await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
             except:
                 pass
-
 
 async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions):
     answer_mapping = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
     max_question_length = 255
     max_option_length = 100
     max_description_length = 200
+    custom_tag = context.user_data.get("custom_tag", "@SecondCoaching")
 
     for question in questions:
         try:
@@ -111,18 +127,13 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
             correct_option_id = answer_mapping.get(correct_option.upper(), None)
             description = question.get('Description', '').strip()
 
-            # Missing data
             missing_data = False
-            missing_elements = []
             if not text:
-                missing_elements.append("Question")
                 missing_data = True
-            for index, option in enumerate(options):
+            for option in options:
                 if not option:
-                    missing_elements.append(f"Option {chr(65 + index)}")
                     missing_data = True
             if correct_option_id is None:
-                missing_elements.append("Answer")
                 missing_data = True
             if missing_data:
                 message_text = (
@@ -137,8 +148,8 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 await context.bot.send_message(chat_id=chat_id, text=message_text)
                 continue
 
-            if '@SecondCoaching' not in description:
-                description = f"{description} @SecondCoaching" if description else "@SecondCoaching"
+            if custom_tag and custom_tag not in description:
+                description = f"{description} {custom_tag}" if description else custom_tag
             if len(description) > max_description_length:
                 description = description[:max_description_length].rsplit(' ', 1)[0] + "..."
 
@@ -174,4 +185,4 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
             await asyncio.sleep(1)
         except Exception as e:
             await context.bot.send_message(chat_id=chat_id, text="⚠️ CSV me kuch gadbadi hai.")
-            continue  
+            continue
