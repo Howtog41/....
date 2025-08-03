@@ -20,8 +20,9 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
         await update.message.reply_text(
             "📂 ᴛᴏ ᴜᴘʟᴏᴀᴅ ʏᴏᴜʀ ᴄꜱᴠ ꜰɪʟᴇ ꜰᴏʀ ᴍᴄQ ᴄᴏɴᴠᴇʀꜱɪᴏɴ, ᴘʟᴇᴀꜱᴇ ᴇɴꜱᴜʀᴇ ɪᴛ ᴍᴇᴇᴛꜱ ᴛʜᴇ ꜰᴏʟʟᴏᴡɪɴɢ ʀᴇQᴜɪʀᴇᴍᴇɴᴛꜱ:\n\n"
-            "👉 ꜰᴏʀᴍᴀᴛ: \n"
+            "Copy the below format and paste it into any AI bot to convert your questions into CSV.\n"
             "```\n"
+            "👉 ꜰᴏʀᴍᴀᴛ: \n"
             "\"Question\", \"Option A\", \"Option B\", \"Option C\", \"Option D\", \"Answer\", \"Description\"\n"
             "👉 ᴛʜᴇ \"ᴀɴꜱᴡᴇʀ\" ꜱʜᴏᴜʟᴅ ʙᴇ ɪɴ A, B, C, D ꜰᴏʀᴍᴀᴛ.\n"
             "👉 ᴛʜᴇ \"ᴅᴇꜱᴄʀɪᴘᴛɪᴏɴ\" ɪꜱ ᴏᴘᴛɪᴏɴᴀʟ. ɪꜰ ɴᴏᴛ ᴘʀᴏᴠɪᴅᴇᴅ, ɪᴛ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ꜰɪʟʟᴇᴅ.\n\n"
@@ -29,8 +30,12 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
             "📥 Example CSV: [Download](https://t.me/How_To_Google/10)",
             parse_mode='Markdown'
         )
+        keyboard = [
+            [InlineKeyboardButton("🔁 Use AI Bot for Format", url="https://t.me/gpt3_unlim_chatbot")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
 
-
+        
         return UPLOAD_CSV
 
     else:
