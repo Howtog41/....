@@ -16,11 +16,7 @@ from handlers.set_description import get_set_description_handler
 UPLOAD_CSV, CHOOSE_DESTINATION, CHOOSE_CHANNEL = range(3)
 CHANNEL, MESSAGE = range(2)  # States for the change_channel conversation
 
-# Set up logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.DEBUG  # Set to DEBUG to see more detailed logs
-)
+
 
 def main():
     application = Application.builder().token(TOKEN).build()
