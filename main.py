@@ -58,6 +58,7 @@ def main():
     application.add_handler(CommandHandler("skip", skip))
     application.add_handler(CommandHandler("myplan", myplan))
     application.add_handler(CallbackQueryHandler(channel_management_callback, pattern="^manage_.*"))
+    application.add_handler(CallbackQueryHandler(help_menu, pattern="^help_menu$"))
     # Start the bot
     application.run_polling()
 
