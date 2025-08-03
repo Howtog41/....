@@ -1,13 +1,16 @@
 # 
+import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ConversationHandler, CommandHandler, CallbackQueryHandler,
     MessageHandler, ContextTypes, filters
 )
 
+logger = logging.getLogger(__name__)
+
 SET_CHOOSE, WAIT_DESCRIPTION = range(2)
 
-# /setchanneldescription command
+
 async def set_channel_description(update: Update, context: ContextTypes.DEFAULT_TYPE):
     description = context.bot_data.get('channel_description', None)
 
@@ -32,11 +35,12 @@ async def set_channel_description(update: Update, context: ContextTypes.DEFAULT_
     return SET_CHOOSE
 
 
-# Callback button response
 async def description_choice_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     choice = query.data
+
+    logger.info(f"Button clicked: {choice}")
 
     if choice == "edit_description":
         await query.edit_message_text("📝 Send new description (max 200 characters):")
@@ -48,7 +52,6 @@ async def description_choice_callback(update: Update, context: ContextTypes.DEFA
         return ConversationHandler.END
 
 
-# Save new description
 async def receive_new_description(update: Update, context: ContextTypes.DEFAULT_TYPE):
     description = update.message.text.strip()[:200]
     context.bot_data['channel_description'] = description
@@ -64,9 +67,14 @@ def get_set_description_handler():
     return ConversationHandler(
         entry_points=[CommandHandler("setchanneldescription", set_channel_description)],
         states={
-            SET_CHOOSE: [CallbackQueryHandler(description_choice_callback)],
-            WAIT_DESCRIPTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_new_description)],
+            SET_CHOOSE: [
+                CallbackQueryHandler(description_choice_callback, pattern="^(edit_description|delete_description)$")
+            ],
+            WAIT_DESCRIPTION: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_new_description)
+            ],
         },
         fallbacks=[],
-        per_chat=True  
+        per_chat=True,
+        allow_reentry=True
     )
