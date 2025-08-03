@@ -1,5 +1,5 @@
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CallbackQueryHandler
 from helpers.db import users_collection
 from datetime import datetime, timedelta
 import logging
@@ -46,3 +46,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "• Mᴀɪɴᴛᴀɪɴᴇʀ: @How_to_Google \n",
             reply_markup=reply_markup
             )
+
+async def help_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(
+        "**🤖 Bot Commands Menu:**\n\n"
+        "/start - 🤖 Bot ko shuru karein aur welcome message dekhein\n"
+        "/myplan - 📅 Aapka plan status aur bache hue din dekhein\n"
+        "/uploadcsv - 📂 CSV upload karein MCQ banane ke liye\n"
+        "/getcsv - 📤 CSV se quiz polls bhejne ke liye\n"
+        "/done - ✅ Poll bhejna complete karein\n"
+        "/setchannel - 📢 Channel set karein jahan content bhejna hai\n"
+        "/channels - 📋 Set kiye gaye channels dekhein\n"
+        "/authorize - 🔐 Kisi user ko access den (Admin only)\n"
+        "/listauthorized - 📜 Authorized users ki list dekhein/hataayein (Admin only)\n"
+        "/setchanneldescription - 📌 Channel tag ko MCQ me jodhne ke liye\n"
+                                   )
