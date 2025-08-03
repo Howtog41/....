@@ -60,7 +60,8 @@ def main():
     application.add_handler(CommandHandler("done", ask_title))
     application.add_handler(CommandHandler("skip", skip))
     application.add_handler(CommandHandler("myplan", myplan))
-    application.add_handler(get_set_description_handler())
+    for handler in get_description_handlers():
+        app.add_handler(handler)
 
     # Start the bot
     application.run_polling()
