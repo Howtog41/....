@@ -1,14 +1,14 @@
 # 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
-    ContextTypes, CommandHandler, CallbackQueryHandler,
-    MessageHandler, ConversationHandler, filters
+    CommandHandler, CallbackQueryHandler, MessageHandler,
+    ConversationHandler, ContextTypes, filters
 )
 
 # States
 SET_CHOOSE, WAIT_DESCRIPTION = range(2)
 
-# /setchanneldescription command
+# Step 1: /setchanneldescription command
 async def set_channel_description(update: Update, context: ContextTypes.DEFAULT_TYPE):
     description = context.bot_data.get('channel_description', None)
 
@@ -33,7 +33,7 @@ async def set_channel_description(update: Update, context: ContextTypes.DEFAULT_
     return SET_CHOOSE
 
 
-# Callback after Edit/Delete button press
+# Step 2: CallbackQuery (Edit/Delete)
 async def description_choice_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -49,7 +49,7 @@ async def description_choice_callback(update: Update, context: ContextTypes.DEFA
         return ConversationHandler.END
 
 
-# Receive user input for new description
+# Step 3: Receive new description
 async def receive_new_description(update: Update, context: ContextTypes.DEFAULT_TYPE):
     description = update.message.text.strip()[:200]
     context.bot_data['channel_description'] = description
@@ -61,16 +61,13 @@ async def receive_new_description(update: Update, context: ContextTypes.DEFAULT_
     return ConversationHandler.END
 
 
-# Function to return handlers to be added in main file
-def get_description_handlers():
-    conv_handler = ConversationHandler(
+# ✅ Return handler from function
+def get_set_description_handler():
+    return ConversationHandler(
         entry_points=[CommandHandler("setchanneldescription", set_channel_description)],
         states={
             SET_CHOOSE: [CallbackQueryHandler(description_choice_callback)],
             WAIT_DESCRIPTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_new_description)],
         },
         fallbacks=[],
-    )
-
-    return [conv_handler]
-
+        )
