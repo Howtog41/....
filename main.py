@@ -9,7 +9,7 @@ from handlers.channel_change_handler import change_channel, set_channel_name, re
 from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip
 from handlers.myplan import myplan  # adjust import path if needed
 from config import TOKEN
-from handlers.set_description import get_set_description_handler
+from handlers.set_description import get_description_handlers
 
 # Define states for the conversation
 UPLOAD_CSV, CHOOSE_DESTINATION, CHOOSE_CHANNEL = range(3)
