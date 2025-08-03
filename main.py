@@ -55,14 +55,13 @@ def main():
     application.add_handler(CommandHandler("setchannel", set_channel))  # /setchannel command
     application.add_handler(CommandHandler("channels", channels))  # /channels command
     application.add_handler(CommandHandler("authorize", authorize))  # /authorize command
-    application.add_handler(CallbackQueryHandler(channel_management_callback))  # Channel management callback
+    application.add_handler(get_set_description_handler())  # 🟢 First
     application.add_handler(CommandHandler("getcsv", getcsv))  # /getcsv command 
     application.add_handler(MessageHandler(filters.POLL, add_quiz))
     application.add_handler(CommandHandler("done", ask_title))
     application.add_handler(CommandHandler("skip", skip))
     application.add_handler(CommandHandler("myplan", myplan))
-    application.add_handler(get_set_description_handler())
-
+    application.add_handler(CallbackQueryHandler(channel_management_callback, pattern="^manage_.*"))
     # Start the bot
     application.run_polling()
 
