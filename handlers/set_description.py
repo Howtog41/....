@@ -68,4 +68,5 @@ def get_set_description_handler():
             WAIT_DESCRIPTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_new_description)],
         },
         fallbacks=[],
+        per_chat=True  
     )
