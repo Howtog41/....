@@ -10,14 +10,22 @@ from telegram.error import RetryAfter
 UPLOAD_CSV, CHOOSE_DESTINATION = range(2)
 user_state = {}
 
-
+        
 async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     user_info = users_collection.find_one({'user_id': user_id})
+    now = datetime.now()
 
-    if user_id == ADMIN_ID or (user_info and user_info.get('authorized', False)):
+    if user_id == ADMIN_ID:
+        pass_access = True
+    elif user_info and user_info.get('authorized', False):
+        expires_on = user_info.get('expires_on')
+        pass_access = expires_on and expires_on > now
+    else:
+        pass_access = False
+
+    if pass_access:
         user_state[user_id] = {'collecting': True, 'title': False}
-
         await update.message.reply_text(
             "📂 ᴛᴏ ᴜᴘʟᴏᴀᴅ ʏᴏᴜʀ ᴄꜱᴠ ꜰɪʟᴇ ꜰᴏʀ ᴍᴄQ ᴄᴏɴᴠᴇʀꜱɪᴏɴ, ᴘʟᴇᴀꜱᴇ ᴇɴꜱᴜʀᴇ ɪᴛ ᴍᴇᴇᴛꜱ ᴛʜᴇ ꜰᴏʟʟᴏᴡɪɴɢ ʀᴇQᴜɪʀᴇᴍᴇɴᴛꜱ:\n\n"
             "Copy the below format and paste it into any AI bot to convert your questions into CSV.\n"
@@ -35,14 +43,12 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        
-        return UPLOAD_CSV
-
     else:
-
-        await update.message.reply_text("You are not authorized to use this bot. Please contact the admin.")
-
+        await update.message.reply_text(
+            "🚫 You are not authorized to use this command.\nYour trial may have expired.\nContact admin @lkd_ak"
+        )
         return ConversationHandler.END
+
 
 # Handle CSV file upload
 
