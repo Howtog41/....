@@ -6,11 +6,11 @@ from telegram.ext import ContextTypes, CallbackQueryHandler
 from helpers.db import users_collection
 from config import ADMIN_ID
 from telegram.error import RetryAfter
-
+from datetime import datetime
 UPLOAD_CSV, CHOOSE_DESTINATION = range(2)
 user_state = {}
 
-        
+
 async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     user_info = users_collection.find_one({'user_id': user_id})
@@ -43,11 +43,15 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
+        
+        return UPLOAD_CSV
+
     else:
-        await update.message.reply_text(
-            "🚫 You are not authorized to use this command.\nYour trial may have expired.\nContact admin @lkd_ak"
-        )
+
+        await update.message.reply_text("You are not authorized to use this bot. Please contact the admin.")
+
         return ConversationHandler.END
+
 
 
 # Handle CSV file upload
