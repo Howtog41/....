@@ -15,7 +15,7 @@ SET_CHOOSE, WAIT_DESCRIPTION = range(2)
 # "global"-> bot_data keeps a mapping chat_id -> description (also per-chat,
 #            useful if you want explicit per-channel map)
 STORAGE_MODE = "user"   # change to "chat" or "global" as needed
-DEFAULT_DESCRIPTION = "@How_To_Google"
+DEFAULT_DESCRIPTION = "Default Description:- @How_To_Google"
 MAX_LEN = 200
 
 # --- helper functions to get/set/delete description depending on STORAGE_MODE ---
