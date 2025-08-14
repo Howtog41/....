@@ -56,6 +56,7 @@ def main():
     application.add_handler(CallbackQueryHandler(select_format, pattern="^format_"))
     application.add_handler(MessageHandler(filters.POLL, add_quiz))
     application.add_handler(CommandHandler("done", ask_title))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, set_title))
     application.add_handler(CommandHandler("skip", skip))
     application.add_handler(CommandHandler("myplan", myplan))
     application.add_handler(CallbackQueryHandler(channel_management_callback, pattern="^manage_.*"))
