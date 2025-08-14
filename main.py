@@ -6,7 +6,7 @@ from handlers.poll_handler import choose_destination, channel_callback, send_all
 from handlers.channel_handler import set_channel, channels, channel_management_callback
 from handlers.authorization_handler import authorize
 from handlers.channel_change_handler import change_channel, set_channel_name, receive_message, done  # Import the new handler functions
-from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip
+from handlers.quiz_handler import getcsv, add_quiz, ask_title, set_title, skip, select_format
 from handlers.myplan import myplan  # adjust import path if needed
 from config import TOKEN
 from handlers.set_description import get_set_description_handler
@@ -53,6 +53,7 @@ def main():
     application.add_handler(CommandHandler("authorize", authorize))  # /authorize command
     application.add_handler(get_set_description_handler())  # 🟢 First
     application.add_handler(CommandHandler("getcsv", getcsv))  # /getcsv command 
+    application.add_handler(CallbackQueryHandler(select_format, pattern="^format_"))
     application.add_handler(MessageHandler(filters.POLL, add_quiz))
     application.add_handler(CommandHandler("done", ask_title))
     application.add_handler(CommandHandler("skip", skip))
