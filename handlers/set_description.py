@@ -57,24 +57,29 @@ def reset_to_default(update: Update, context: ContextTypes.DEFAULT_TYPE):
         descriptions[chat_id] = DEFAULT_DESCRIPTION
 
 
+
 async def set_channel_description(update: Update, context: ContextTypes.DEFAULT_TYPE):
     desc = get_description(update, context)
+
+    # Agar kuch set nahi hai to display ke liye default dikhayenge, save nahi karenge
     if desc is None:
-        set_description(update, context, DEFAULT_DESCRIPTION)
-        desc = DEFAULT_DESCRIPTION
+        display_desc = DEFAULT_DESCRIPTION
+    else:
+        display_desc = desc
 
     buttons = [InlineKeyboardButton("✏️ Edit Description", callback_data="edit_description")]
-    if desc != DEFAULT_DESCRIPTION:
+    if desc:  # Sirf tab delete ka option jab custom description set hai
         buttons.append(InlineKeyboardButton("❌ Delete Description", callback_data="delete_description"))
 
     reply_markup = InlineKeyboardMarkup([buttons])
 
     await update.message.reply_text(
-        f"📌 Current Description:\n\n`{desc}`",
+        f"📌 Current Description:\n\n`{display_desc}`",
         parse_mode="Markdown",
         reply_markup=reply_markup
     )
     return SET_CHOOSE
+
 
 
 async def description_choice_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
