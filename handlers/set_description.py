@@ -48,14 +48,13 @@ def set_description(update: Update, context: ContextTypes.DEFAULT_TYPE, text: st
 
 def reset_to_default(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if STORAGE_MODE == "user":
-        context.user_data["channel_description"] = DEFAULT_DESCRIPTION
+        context.user_data.pop("channel_description", None)
     elif STORAGE_MODE == "chat":
-        context.chat_data["channel_description"] = DEFAULT_DESCRIPTION
+        context.chat_data.pop("channel_description", None)
     else:
         chat_id = _get_desc_key_for_global(update)
         descriptions = context.bot_data.setdefault("channel_descriptions", {})
-        descriptions[chat_id] = DEFAULT_DESCRIPTION
-
+        descriptions.pop(chat_id, None)
 
 
 async def set_channel_description(update: Update, context: ContextTypes.DEFAULT_TYPE):
