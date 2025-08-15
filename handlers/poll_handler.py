@@ -55,44 +55,71 @@ import asyncio
 from math import ceil
 
 async def send_all_polls(chat_id, context: ContextTypes.DEFAULT_TYPE, questions, use_batches=True):
-    ...
+    total_mcq = len(questions)
+    sent_count = 0
+
     if use_batches:
         chunk_size = 15
-        total_batches = ceil(len(questions) / chunk_size)
+        total_batches = ceil(total_mcq / chunk_size)
+
         for batch_num in range(total_batches):
             start = batch_num * chunk_size
             end = start + chunk_size
             current_batch = questions[start:end]
 
-            msg = await context.bot.send_message(chat_id=chat_id, text=f"📦 Sending batch {batch_num+1}/{total_batches}...")
-            await asyncio.sleep(2)
-            await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
-
-            await send_questions(chat_id, context, current_batch)
-
-            countdown = 30
-            msg = await context.bot.send_message(
+            # Progress message before batch send
+            progress_msg = await context.bot.send_message(
                 chat_id=chat_id,
-                text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {countdown} seconds..."
+                text=f"📦 Sending batch {batch_num+1}/{total_batches}...\n✅ Sent: {sent_count}/{total_mcq}\n📌 Remaining: {total_mcq - sent_count}"
             )
 
+            # Delete progress message after short wait
+            await asyncio.sleep(2)
+            try:
+                await context.bot.delete_message(chat_id=chat_id, message_id=progress_msg.message_id)
+            except:
+                pass
+
+            # Send batch polls
+            await send_questions(chat_id, context, current_batch)
+
+            sent_count += len(current_batch)  # Update sent count
+
+            # Show progress after batch
+            progress_after_batch = await context.bot.send_message(
+                chat_id=chat_id,
+                text=f"✅ Batch {batch_num+1} complete.\n📊 Sent: {sent_count}/{total_mcq}\n📌 Remaining: {total_mcq - sent_count}"
+            )
+
+            # Countdown delete message
+            countdown = 30
             for i in range(countdown - 1, 0, -1):
-                await asyncio.sleep(2)
+                await asyncio.sleep(1)
                 try:
                     await context.bot.edit_message_text(
                         chat_id=chat_id,
-                        message_id=msg.message_id,
-                        text=f"✅ Batch {batch_num+1} complete.\n⏳ Deleting in {i} seconds..."
+                        message_id=progress_after_batch.message_id,
+                        text=f"✅ Batch {batch_num+1} complete.\n📊 Sent: {sent_count}/{total_mcq}\n📌 Remaining: {total_mcq - sent_count}\n⏳ Deleting in {i} seconds..."
                     )
                 except:
-        # Don't break — continue sleeping even if edit fails
                     pass
 
-            await asyncio.sleep(1)  # final 1 second
+            # Delete after countdown
             try:
-                await context.bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
+                await context.bot.delete_message(chat_id=chat_id, message_id=progress_after_batch.message_id)
             except:
                 pass
+
+        # Final message after all polls sent
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=f"🎯 All polls sent successfully!\n✅ Total: {total_mcq} MCQs"
+        )
+    else:
+        # If batches are not used
+        await send_questions(chat_id, context, questions)
+        await context.bot.send_message(chat_id=chat_id, text=f"🎯 All {total_mcq} polls sent successfully!")
+
 
 
 async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions):
