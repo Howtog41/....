@@ -102,7 +102,7 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
     max_description_length = 200
 
     # 🔹 Fetch channel description for destination
-    global_desc = get_description_for_chat_id(context, chat_id) or Join
+    global_desc = get_description_for_chat_id(context, chat_id) or DEFAULT_DESCRIPTION
     global_desc = global_desc.strip()
 
     
