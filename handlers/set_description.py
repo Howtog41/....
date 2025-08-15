@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 SET_CHOOSE, WAIT_DESCRIPTION = range(2)
 
 STORAGE_MODE = "global"   # Channel-wise storage
-DEFAULT_DESCRIPTION = "Default Description:- @How_To_Google"
+DEFAULT_DESCRIPTION = "Join:- @How_To_Google"
 MAX_LEN = 200
 
 
