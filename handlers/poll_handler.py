@@ -101,9 +101,10 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
     max_option_length = 100
     max_description_length = 200
 
-    # Fetch channel description for destination
-    global_desc = get_description_for_chat_id(context, chat_id)
-    global_desc = global_desc.strip() if global_desc else None
+    # 🔹 Fetch channel description for destination
+    global_desc = get_description_for_chat_id(context, chat_id) or DEFAULT_DESCRIPTION
+    global_desc = global_desc.strip()
+
     
     for question in questions:
         try:
@@ -144,17 +145,12 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 await context.bot.send_message(chat_id=chat_id, text=message_text)
                 continue
 
-
             # Merge description
-            if description:
-                # Agar CSV me description already hai, sirf custom global_desc add karo
-                if global_desc and global_desc != DEFAULT_DESCRIPTION and global_desc not in description:
-                    description = f"{description} {global_desc}"
-            else:
-                 # Agar CSV me description nahi hai, to custom ho to wo, warna default lagao
-                description = global_desc or DEFAULT_DESCRIPTION
+            if global_desc and global_desc not in description:
+                description = f"{description} {global_desc}" if description else global_desc
+            if len(description) > max_description_length:
+                description = description[:max_description_length].rsplit(' ', 1)[0] + "..."
 
-            
             if len(text) <= max_question_length and all(len(option) <= max_option_length for option in options):
                 await context.bot.send_poll(
                     chat_id=chat_id,
