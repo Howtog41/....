@@ -99,6 +99,11 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
     max_option_length = 100
     max_description_length = 200
 
+    # 🔹 Fetch channel description for destination
+    global_desc = get_description_for_chat_id(context, chat_id) or DEFAULT_DESCRIPTION
+    global_desc = global_desc.strip()
+
+    
     for question in questions:
         try:
             text = question.get('Question', '').strip()
@@ -138,12 +143,7 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 await context.bot.send_message(chat_id=chat_id, text=message_text)
                 continue
 
-            # Use global description set by user
-            # Dummy update object with chat id, kyunki poll handler me Update object nahi hota
-            dummy_update = type("obj", (object,), {"effective_chat": type("obj", (object,), {"id": chat_id})})()
-            global_desc = get_description(dummy_update, context) or ""
-            global_desc = global_desc.strip()
-
+            # Merge description
             if global_desc and global_desc not in description:
                 description = f"{description} {global_desc}" if description else global_desc
             if len(description) > max_description_length:
@@ -182,3 +182,8 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
         except Exception as e:
             await context.bot.send_message(chat_id=chat_id, text="⚠️ CSV me kuch gadbadi hai.")
             continue
+
+
+
+
+
