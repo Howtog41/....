@@ -1,8 +1,10 @@
+import asyncio
+from math import ceil
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler
 from helpers.db import users_collection
-from handlers.set_description import get_description
-import asyncio
+from handlers.set_description import get_description_for_chat_id, DEFAULT_DESCRIPTION
+
 async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
