@@ -60,6 +60,12 @@ async def upload_csv_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def handle_csv_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    # ✅ Ensure user is in correct state
+    if not user_state.get(user_id, {}).get('collecting', False):
+        await update.message.reply_text(
+            "❌ Please use /uploadcsv command first before sending a CSV file."
+        )
+        return ConversationHandler.END
 
     logging.info(f"Handling CSV upload for user: {user_id}")
 
