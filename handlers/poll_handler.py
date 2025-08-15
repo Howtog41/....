@@ -1,6 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler
 from helpers.db import users_collection
+from handlers.set_description import get_description
 import asyncio
 async def choose_destination(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -138,7 +139,10 @@ async def send_questions(chat_id, context: ContextTypes.DEFAULT_TYPE, questions)
                 continue
 
             # Use global description set by user
-            global_desc = context.bot_data.get('channel_description', '').strip()
+            # Dummy update object with chat id, kyunki poll handler me Update object nahi hota
+            dummy_update = type("obj", (object,), {"effective_chat": type("obj", (object,), {"id": chat_id})})()
+            global_desc = get_description(dummy_update, context) or ""
+            global_desc = global_desc.strip()
 
             if global_desc and global_desc not in description:
                 description = f"{description} {global_desc}" if description else global_desc
