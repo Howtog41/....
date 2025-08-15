@@ -12,7 +12,7 @@ from handlers.myplan import myplan
 from config import TOKEN
 from handlers.set_description import get_set_description_handler
 from handlers.broadcast import setup_broadcast_handlers
-from db import users_collection  # MongoDB users list
+from helpers.db import users_collection  # MongoDB users list
 
 # Define states for the conversation
 UPLOAD_CSV, CHOOSE_DESTINATION, CHOOSE_CHANNEL = range(3)
